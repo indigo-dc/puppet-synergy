@@ -15,72 +15,74 @@
 
 ## Overview
 
-Set up [Synergy](https://launchpad.net/synergy-service) on en existing
+Set up [Synergy](https://launchpad.net/synergy-service) on an existing
 OpenStack instance.
-
-We currently target:
-
-- CentOS 7 and Ubuntu 14.04
-- OpenStack Liberty
 
 
 ## Module Description
 
+Users that already have an OpenStack instance can use this module to install
+and configure the two main Synergy components:
 
+- [synergy-service](https://launchpad.net/synergy-service)
+- [synergy-scheduler-manager](https://launchpad.net/synergy-scheduler-manager)
 
-If applicable, this section should have a brief description of the technology
-the module integrates with and what that integration enables. This section
-should answer the questions: "What does this module *do*?" and "Why would I use
-it?"
+This module will download the latest version of Synergy and install it.
+One can manage Synergy configuration directly through this module.
 
-If your module has a range of functionality (installation, configuration,
-management, etc.) this is the time to mention it.
 
 ## Setup
 
 ### What synergy affects
 
-* A list of files, packages, services, or operations that the module will alter,
-  impact, or execute on the system it's installed on.
-* This is a great place to stick any warnings.
-* Can be in list or paragraph form.
+* Synergy configuration file at `/etc/synergy/synergy.conf`
+* packages `synergy-service` (rpm or deb depending on the platform) and
+  `synergy-scheduler-manager` (via pip)
 
-### Setup Requirements **OPTIONAL**
+### Setup Requirements
 
-If your module requires anything extra before setting up (pluginsync enabled,
-etc.), mention it here.
+An OpenStack instance (with the version specified in [Limitations](#limitations)).
 
 ### Beginning with synergy
 
-The very basic steps needed for a user to get the module up and running.
+Make sure this module is discoverable by your Puppet instance.
 
-If your most recent release breaks compatibility or requires particular steps
-for upgrading, you may wish to include an additional section here: Upgrading
-(For an example, see http://forge.puppetlabs.com/puppetlabs/firewall).
+Declare the `indigodc-synergy` class (see [Usage](#usage)).
 
 ## Usage
 
-Put the classes, types, and resources for customizing, configuring, and doing
-the fancy stuff with your module here.
+```puppet
+class { 'indigodc-synergy':
+  synergy_db_url          => 'mysql://test:test@localhost',
+  dynamic_quotas          => {'project_A' => 1,  'project_B' => 2},
+  project_shares          => {'project_A' => 70, 'project_B' => 30 },
+  user_shares             => {'project_A' => {'user1' => 60, 'user2' => 40 },
+                              'project_B' => {'user3' => 80, 'user4' => 20}},
+  keystone_url            => 'https://example.com',
+  keystone_admin_user     => 'admin',
+  keystone_admin_password => 'the admin password',
+}
+```
 
 ## Reference
 
-Here, list the classes, types, providers, facts, etc contained in your module.
-This section should include all of the under-the-hood workings of your module so
-people know what the module is touching on their system but don't need to mess
-with things. (We are working on automating this section!)
+Classes:
+
+- `indigodc-synergy`
 
 ## Limitations
 
-This is where you list OS compatibility, version compatibility, etc.
+**Operating System**
+- CentOS 7
+- Ubuntu 14.04
+
+**OpenStack version**
+- Liberty
+
 
 ## Development
 
-Since your module is awesome, other users will want to play with it. Let them
-know what the ground rules for contributing are.
+Feel free to submit pull requests on the [project github page](https://github.com/indigo-dc/synergy-service).
 
-## Release Notes/Contributors/Etc **Optional**
+## Release Notes
 
-If you aren't using changelog, put your release notes here (though you should
-consider using changelog). You may also add any additional sections you feel are
-necessary or important to include here. Please use the `## ` header.
