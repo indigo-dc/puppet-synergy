@@ -1,0 +1,109 @@
+[DEFAULT]
+
+
+[Logger]
+filename=/var/log/synergy/synergy.log
+level=INFO
+formatter="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+maxBytes=1048576
+backupCount=100
+
+
+[WSGI]
+host=localhost
+port=8051
+threads=2
+use_ssl=False
+#ssl_ca_file=
+#ssl_cert_file=
+#ssl_key_file=
+max_header_line=16384
+retry_until_window=30
+tcp_keepidle=600
+backlog=4096
+
+
+[FairShareManager]
+autostart=True
+# time to calculate fairshare (minutes)
+rate=2
+db_connection=<%= @synergy_db_url %>
+scheduler_topic=scheduler
+
+# period in days
+period_length=1
+# time window (last 3 days)
+num_of_periods=3
+
+# weights
+decay_weight=0.5
+vcpus_weight=50
+age_weight=0
+memory_weight=50
+
+# the list of projects accessing to the dynamic quota
+# the integer value expresses the max time to live (minutes) for VM
+<%
+dynamic_quota = ""
+@dynamic_quotas.each do |project, value|
+    dynamic_quota += "#{project}=#{value}, "
+end
+dynamic_quota.chomp!(', ')
+-%>
+dynamic_quota=<%= dynamic_quota %>
+
+# shares
+<%
+shares = ""
+
+@project_shares.each do |project, share|
+    shares += "#{project}=#{share}, "
+end
+
+@user_shares.each do |project, users|
+    users.each do |user, share|
+        shares += "#{user}@#{project}=#{share}, "
+    end
+end
+
+shares.chomp!(', ')
+-%>
+shares=<%= shares %>
+
+# default share value if not defined
+default_project_share=10.0
+
+# default max time to live (minutes)
+default_runtinme_limit=10
+
+#extended_quota=batch-long #fairshare interno al tenant
+
+
+[KeystoneManager]
+autostart=True
+rate=5
+auth_url=<%= @keystone_url %>
+username=<%= @keystone_admin_user %>
+password=<%= @keystone_admin_password %>
+project_name=admin
+timeout=60
+trust_expiration=24
+
+
+[NovaManager]
+autostart=True
+rate=5
+nova_conf=/etc/synergy/nova.conf
+timeout=60
+
+
+[QueueManager]
+autostart=True
+rate=5
+db_connection=<%= @synergy_db_url %>
+
+
+[QuotaManager]
+autostart=True
+rate=5
+db_connection=<%= @synergy_db_url %>

@@ -1,0 +1,14 @@
+{
+  "name": "indigodc-synergy",
+  "version": "0.1.0",
+  "author": "Vincent Llorens <vincent.llorens@cc.in2p3.fr>",
+  "summary": "Set up Synergy on an existing OpenStack instance",
+  "license": "Apache 2.0",
+  "source": "https://github.com/indigo-dc/puppet-synergy",
+  "project_page": "https://github.com/indigo-dc/puppet-synergy",
+  "issues_url": "https://github.com/indigo-dc/puppet-synergy/issues",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ]
+}
+
