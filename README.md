@@ -47,12 +47,12 @@ An OpenStack instance (with the version specified in [Limitations](#limitations)
 
 Make sure this module is discoverable by your Puppet instance.
 
-Declare the `indigodc-synergy` class (see [Usage](#usage)).
+Declare the `synergy` class (see [Usage](#usage)).
 
 ## Usage
 
 ```puppet
-class { 'indigodc-synergy':
+class { 'synergy':
   synergy_db_url          => 'mysql://test:test@localhost',
   dynamic_quotas          => {'project_A' => 1,  'project_B' => 2},
   project_shares          => {'project_A' => 70, 'project_B' => 30 },
@@ -68,7 +68,7 @@ class { 'indigodc-synergy':
 
 Classes:
 
-- `indigodc-synergy`
+- `synergy`
 
 ## Limitations
 

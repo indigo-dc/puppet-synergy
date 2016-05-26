@@ -1,4 +1,4 @@
-# == Class: indigodc-synergy
+# == Class: synergy
 #
 # Install Synergy on an existing OpenStack instance.
 #
@@ -26,7 +26,7 @@
 #
 
 
-class indigodc-synergy (
+class synergy (
   $synergy_db_url,
   $dynamic_quotas,
   $project_shares,
@@ -199,7 +199,7 @@ class indigodc-synergy (
   # Set the configuration
   file { '/etc/synergy/synergy.conf':
     ensure  => present,
-    content => template('indigodc-synergy/synergy.conf.erb'),
+    content => template('synergy/synergy.conf.erb'),
     require => Package['python-synergy-service'],
   }
 }

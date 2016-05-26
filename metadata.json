@@ -1,5 +1,5 @@
 {
-  "name": "indigodc-synergy",
+  "name": "vll-synergy",
   "version": "0.1.0",
   "author": "Vincent Llorens <vincent.llorens@cc.in2p3.fr>",
   "summary": "Set up Synergy on an existing OpenStack instance",
