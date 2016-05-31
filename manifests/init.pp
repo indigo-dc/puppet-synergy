@@ -11,11 +11,6 @@
 # Define relative shares between each project.
 # {'ProjectA' => 70, 'ProjectB' => 30}
 #
-# [*user_shares*]
-# Define relative shares between user under a same project.
-# {'ProjectA' => {'userA1' => 60, 'userA2' => 40},
-#  'ProjectB' => {'userB1' => 10, 'userB2' => 90}}
-#
 # === Authors
 #
 # Vincent Llorens <vincent.llorens@cc.in2p3.fr>
@@ -28,12 +23,22 @@
 
 class synergy (
   $synergy_db_url,
-  $dynamic_quotas,
-  $project_shares,
-  $user_shares,
+  $synergy_log_file='/var/log/synergy/synergy.log',
+  $synergy_log_level='INFO',
+  $synergy_service_host='localhost',
+  $synergy_service_port=8051,
+  $synergy_project_shares,
   $keystone_url,
   $keystone_admin_user,
   $keystone_admin_password,
+  $nova_url,
+  $nova_db_url,
+  $amqp_backend='rabbit',
+  $amqp_host,
+  $amqp_port=5672,
+  $amqp_user='openstack',
+  $amqp_password,
+  $amqp_virtual_host='/',
 ){
   # Packages to download and install
   $synergy_service_deb = 'https://github.com/indigo-dc/synergy-service/releases/download/v0.2/python-synergy-service_0.2-1_all.deb'

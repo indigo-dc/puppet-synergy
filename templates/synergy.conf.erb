@@ -2,16 +2,16 @@
 
 
 [Logger]
-filename=/var/log/synergy/synergy.log
-level=INFO
+filename=<%= @synergy_log_file %>
+level=<%= @synergy_log_level %>
 formatter="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 maxBytes=1048576
 backupCount=100
 
 
 [WSGI]
-host=localhost
-port=8051
+host=<%= @synergy_service_host %>
+port=<%= @synergy_service_port %>
 threads=2
 use_ssl=False
 #ssl_ca_file=
@@ -23,87 +23,120 @@ tcp_keepidle=600
 backlog=4096
 
 
+[SchedulerManager]
+autostart=True
+# Rate (minutes)
+rate=1
+
+# The list of projects accessing to the dynamic quota
+# projects=prj_a, prj_b
+<%
+projects = ""
+shares = ""
+
+@synergy_project_shares.each do |project, share|
+    projects += "#{project}, "
+    shares += "#{project}=#{share}, "
+end
+
+projects.chomp!(', ')
+shares.chomp!(', ')
+-%>
+projects=<%= projects %>
+
+# The integer value expresses the share
+# shares=prj_a=70, prj_b=30
+shares=<%= shares %>
+
+# The integer value expresses the default max time to live (minutes) for VM/Container
+default_TTL=2880
+
+# The integer value expresses the max time to live (minutes) for VM/Container
+# TTLs=prj_a=1440, prj_b=2880
+TTLs=
+
+
 [FairShareManager]
 autostart=True
-# time to calculate fairshare (minutes)
+# Rate (minutes)
 rate=2
-db_connection=<%= @synergy_db_url %>
-scheduler_topic=scheduler
 
-# period in days
-period_length=1
-# time window (last 3 days)
-num_of_periods=3
+# Period size
+period_length=7
+# Num of periods
+periods=3
 
-# weights
+# Default share value
+default_share=10
+
+# Weights
 decay_weight=0.5
 vcpus_weight=50
 age_weight=0
 memory_weight=50
 
-# the list of projects accessing to the dynamic quota
-# the integer value expresses the max time to live (minutes) for VM
-<%
-dynamic_quota = ""
-@dynamic_quotas.each do |project, value|
-    dynamic_quota += "#{project}=#{value}, "
-end
-dynamic_quota.chomp!(', ')
--%>
-dynamic_quota=<%= dynamic_quota %>
-
-# shares
-<%
-shares = ""
-
-@project_shares.each do |project, share|
-    shares += "#{project}=#{share}, "
-end
-
-@user_shares.each do |project, users|
-    users.each do |user, share|
-        shares += "#{user}@#{project}=#{share}, "
-    end
-end
-
-shares.chomp!(', ')
--%>
-shares=<%= shares %>
-
-# default share value if not defined
-default_project_share=10.0
-
-# default max time to live (minutes)
-default_runtinme_limit=10
-
-#extended_quota=batch-long #fairshare interno al tenant
-
 
 [KeystoneManager]
 autostart=True
 rate=5
+
+# The Keystone url (v3 only)
+# auth_url=http://localhost:5000/v3
 auth_url=<%= @keystone_url %>
+# The name of user with admin role
 username=<%= @keystone_admin_user %>
+# The password of user with admin role
 password=<%= @keystone_admin_password %>
+# The project to request authorization on
 project_name=admin
+# Set the http connection timeout
 timeout=60
-trust_expiration=24
 
 
 [NovaManager]
 autostart=True
 rate=5
-nova_conf=/etc/synergy/nova.conf
+
+# The nova configuration file: if specified the following attributes are used:
+# my_ip, conductor_topic, compute_topic, scheduler_topic, connection, rpc_backend
+# in case of RABBIT backend: rabbit_host, rabbit_port, rabbit_virtual_host, rabbit_userid, rabbit_password
+# in case of QPID backend: qpid_hostname, qpid_port, qpid_username, qpid_password
+nova_conf=/etc/nova/nova.conf
+
+host=<%= @nova_url %>
+#set the http connection timeout (default=60)
 timeout=60
+
+# The AMQP backend type (e.g. rabbit, qpid)
+amqp_backend=<%= @amqp_backend %>
+amqp_host=<%= @amqp_host %>
+amqp_port=<%= @amqp_port %>
+amqp_user=<%= @amqp_user %>
+amqp_password=<%= @amqp_password %>
+amqp_virtual_host=<%= @amqp_virtual_host %>
+# The conductor topic
+conductor_topic=conductor
+# The compute topic
+compute_topic=compute
+# The scheduler topic
+scheduler_topic=scheduler
+# The NOVA database connection
+# db_connection=DIALECT+DRIVER://USER:PASSWORD@HOST/DBNAME
+db_connection=<%= @nova_db_url %>
 
 
 [QueueManager]
 autostart=True
 rate=5
+# The Synergy database connection
+# db_connection=DIALECT+DRIVER://USER:PASSWORD@HOST/DBNAME
 db_connection=<%= @synergy_db_url %>
+# The connection pool size
+db_pool_size=10
+# The max overflow
+db_max_overflow=5
 
 
 [QuotaManager]
 autostart=True
 rate=5
-db_connection=<%= @synergy_db_url %>
