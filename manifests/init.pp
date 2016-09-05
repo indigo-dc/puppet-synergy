@@ -20,6 +20,7 @@
 # Copyright 2016 Vincent Llorens - INDIGO-DataCloud, unless otherwise noted.
 #
 
+include apt
 
 class synergy (
   $synergy_db_url,
@@ -99,22 +100,17 @@ class synergy (
         Yumrepo['cc-vendor'] ],
     }
   }
-  # TODO better way to store the intermediate package files
+
   elsif $os_name == 'Ubuntu' and $os_version == '14.04' {
-    package { 'wget':
-      ensure => present,
+    apt::key { 'indigo':
+      id     => '02F49DBEE9D159F18FD3D35F4CC3AB0A98098DFB',
+      source => 'http://repo.indigo-datacloud.eu/repository/RPM-GPG-KEY-indigodc',
     }
 
-    exec { 'wget python-synergy-service.deb':
-      command => "/usr/bin/wget -q -O /tmp/python-synergy-service.deb $synergy_service_deb",
-      creates => '/tmp/python-synergy-service.deb',
-      require => Package['wget'],
-    }
-
-    file { 'python-synergy-service.deb':
-      path    => '/tmp/python-synergy-service.deb',
-      ensure  => present,
-      require => Exec['wget python-synergy-service.deb'],
+    apt::source { 'indigo':
+      location => 'http://repo.indigo-datacloud.eu/repository/indigo/1/ubuntu/',
+      repos    => "main third-party",
+      require  => Apt::Key['indigo'],
     }
 
     package { 'python-eventlet':
@@ -138,30 +134,31 @@ class synergy (
     }
 
     package { 'python-synergy-service':
-      provider => 'dpkg',
-      ensure   => latest,
-      source   => '/tmp/python-synergy-service.deb',
+      provider => 'apt',
+      name     => 'python-synergy-service',
+      ensure   => present,
       require  => [
-        File['python-synergy-service.deb'],
         Package['python-eventlet'],
         Package['python-pbr'],
         Package['python-oslo.messaging'],
         Package['python-dateutil'],
         Package['python-oslo.config'],
+        Apt::Source['indigo'],
       ],
+    }
+
+    package { 'python-synergy-scheduler-manager':
+      name    => 'python-synergy-scheduler-manager',
+      ensure  => present,
+      require => [
+        Package['python-synergy-service'],
+        Apt::Source['indigo'],
+      ],        
     }
   }
   else {
     fail("This module supports CentOS 7 and Ubuntu 14.04 only, not $os_name $os_version.")
   }
-
-  # TODO when the scheduler is shipped
-  # Install the Synergy scheduler
-  # package { 'synergy-scheduler-manager':
-  #   provider => 'pip',
-  #   ensure   => latest,
-  #   require  => Package['python-synergy-service'],
-  # }
 
   # Set the configuration
   file { '/etc/synergy/synergy.conf':

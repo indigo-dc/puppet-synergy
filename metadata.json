@@ -1,6 +1,6 @@
 {
   "name": "vll-synergy",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "Vincent Llorens <vincent.llorens@cc.in2p3.fr>",
   "summary": "Set up Synergy on an existing OpenStack instance",
   "license": "Apache 2.0",
@@ -8,7 +8,7 @@
   "project_page": "https://github.com/indigo-dc/puppet-synergy",
   "issues_url": "https://github.com/indigo-dc/puppet-synergy/issues",
   "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"},
+    {"name":"puppetlabs/apt","version_requirement":">=2.0.0"}
   ]
 }
-

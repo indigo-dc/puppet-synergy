@@ -43,6 +43,14 @@ One can manage Synergy configuration directly through this module.
 
 An OpenStack instance (with the version specified in [Limitations](#limitations)).
 
+The Puppet module [puppetlabs/apt](https://forge.puppet.com/puppetlabs/apt/)
+if you plan to install on Ubuntu.
+
+An OpenStack package repository for fetching `python-oslo*` libraries:
+
+- on Ubuntu, use the [*OpenStack/CloudArchive*](https://wiki.ubuntu.com/OpenStack/CloudArchive) repository.
+- on CentOS, use the *CentOS Cloud SIG* repository available through the `centos-openstack-release-{openstackversion}` package.
+
 ### Beginning with synergy
 
 Make sure this module is discoverable by your Puppet instance.
@@ -86,3 +94,5 @@ Feel free to submit pull requests on the [project github page](https://github.co
 
 ## Release Notes
 
+### 0.3.0 (2016-09-05)
+- Ubuntu Synergy packages are now retrieved using the INDIGO-DC repository.
