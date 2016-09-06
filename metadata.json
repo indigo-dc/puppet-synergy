@@ -1,6 +1,6 @@
 {
   "name": "vll-synergy",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "Vincent Llorens <vincent.llorens@cc.in2p3.fr>",
   "summary": "Set up Synergy on an existing OpenStack instance",
   "license": "Apache 2.0",
