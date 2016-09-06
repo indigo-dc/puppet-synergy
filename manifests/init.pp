@@ -41,9 +41,6 @@ class synergy (
   $amqp_password,
   $amqp_virtual_host='/',
 ){
-  # Packages to download and install
-  $synergy_service_deb = 'https://github.com/indigo-dc/synergy-service/releases/download/v0.2/python-synergy-service_0.2-1_all.deb'
-
   # Check which OS we are running on
   $os_name = $::operatingsystem
   if $os_name == 'Ubuntu' {
@@ -58,11 +55,12 @@ class synergy (
 
   # Install Synergy package and dependencies
   if $os_name == 'CentOS' and $os_version == '7' {
-    yumrepo { 'cc-vendor':
-      descr    => 'Vendor repository for Synergy',
+    yumrepo { 'indigo':
+      descr    => 'INDIGO-DataCloud repository for Synergy',
       enabled  => 1,
-      baseurl  => "http://ccrepoli.in2p3.fr/linux/el/${os_version}x/${::architecture}/vendor",
-      gpgcheck => 0,
+      baseurl  => 'http://repo.indigo-datacloud.eu/repository/indigo/1/centos7/x86_64/base/',
+      gpgcheck => 1,
+      gpgkey   => 'http://repo.indigo-datacloud.eu/repository/RPM-GPG-KEY-indigodc',
     }
 
     package { 'centos-release-openstack-liberty':
@@ -77,7 +75,7 @@ class synergy (
       ensure  => present,
       require => Package['centos-release-openstack-liberty'],
     }
-  
+
     package { 'python2-oslo-config':
       ensure  => present,
       require => Package['centos-release-openstack-liberty'],
@@ -97,7 +95,16 @@ class synergy (
       ensure   => present,
       require  => [
         Package['centos-release-openstack-liberty'],
-        Yumrepo['cc-vendor'] ],
+        Yumrepo['indigo'],
+      ],
+    }
+
+    package { 'python-synergy-scheduler-manager':
+      ensure  => present,
+      require => [
+        Package['python-synergy-service'],
+        Yumrepo['indigo'],
+      ],
     }
   }
 
@@ -153,7 +160,7 @@ class synergy (
       require => [
         Package['python-synergy-service'],
         Apt::Source['indigo'],
-      ],        
+      ],
     }
   }
   else {

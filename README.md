@@ -49,7 +49,7 @@ if you plan to install on Ubuntu.
 An OpenStack package repository for fetching `python-oslo*` libraries:
 
 - on Ubuntu, use the [*OpenStack/CloudArchive*](https://wiki.ubuntu.com/OpenStack/CloudArchive) repository.
-- on CentOS, use the *CentOS Cloud SIG* repository available through the `centos-openstack-release-{openstackversion}` package.
+- on CentOS, the *CentOS Cloud SIG* repository will be installed during the Puppet run through the `centos-openstack-release-{openstackversion}` package.
 
 ### Beginning with synergy
 
