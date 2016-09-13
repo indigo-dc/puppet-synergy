@@ -15,7 +15,7 @@
 
 ## Overview
 
-Set up [Synergy](https://launchpad.net/synergy-service) on an existing
+Set up and manage [Synergy](https://launchpad.net/synergy-service) on an existing
 OpenStack instance.
 
 
@@ -74,9 +74,27 @@ class { 'synergy':
 
 ## Reference
 
-Classes:
+### Class: `synergy`
 
-- `synergy`
+#### Parameters
+
+- `synergy_db_url` (*required*): the Synergy database, must be compliant to the [SQLAlchemy database URL schema](http://docs.sqlalchemy.org/en/latest/core/engines.html#database-urls). 
+- `synergy_log_file` (default: `/var/log/synergy/synergy.log`): a file to log to.
+- `synergy_log_level` (default: `INFO`): log all information including and above this level, choices: `INFO`, `WARNING`, `ERROR`.
+- `synergy_service_host` (default: `localhost`): synergy host.
+- `synergy_service_port` (default: `8051`): synergy port.
+- `synergy_project_shares` (*required*): a puppet hash describing the project shares (see [Usage](#usage) for an example).
+- `keystone_url` (*required*): Keystone URL.
+- `keystone_admin_user` (*required*): Keystone admin user.
+- `keystone_admin_password` (*required*): Keystone admin password.
+- `nova_url` (*required*): Nova URL
+- `nova_db_url` (*required*): Nova database URL, in SQLAlchemy format.
+- `amqp_backend` (default: `rabbit`): AMQP backend.
+- `amqp_host` (*required*): AMQP host.
+- `amqp_port` (default: `5672`): AMQP port.
+- `amqp_user` (default: `openstack`): AMQP user.
+- `amqp_password` (*required*): AMQP password.
+- `amqp_virtual_host` (default: `/`): AMQP virtual host.
 
 ## Limitations
 
@@ -91,11 +109,3 @@ Classes:
 ## Development
 
 Feel free to submit pull requests on the [project github page](https://github.com/indigo-dc/synergy-service).
-
-## Release Notes
-
-### 0.3.1 (2016-09-06)
-- CentOS Synergy packages are now retrieved using the INDIGO-DC repository.
-
-### 0.3.0 (2016-09-05)
-- Ubuntu Synergy packages are now retrieved using the INDIGO-DC repository.

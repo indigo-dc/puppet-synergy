@@ -3,9 +3,8 @@
 # Install Synergy on an existing OpenStack instance.
 #
 # === TODO
-# - doc:examples
-# - doc:parameters
-# - create db tables using an sql script?
+# - release v1.0.0
+# - check if we must setup other things.
 #
 # [*project_shares*]
 # Define relative shares between each project.
@@ -51,6 +50,12 @@ class synergy (
   }
   else {
     $os_version = undef
+  }
+
+  # Install Synergy dependency that is not available as a system package
+  package { 'tabulate':
+    provider => 'pip',
+    ensure   => 'present',
   }
 
   # Install Synergy package and dependencies
