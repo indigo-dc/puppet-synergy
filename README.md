@@ -95,6 +95,8 @@ class { 'synergy':
 - `amqp_user` (default: `openstack`): AMQP user.
 - `amqp_password` (*required*): AMQP password.
 - `amqp_virtual_host` (default: `/`): AMQP virtual host.
+- `install_centos_cloud` (default: `true`): wheter or not to setup the CentOS Cloud OpenStack repository. 
+- `install_indigo_repo` (default: `true`): wheter or not to setup the INDIGO-DC repository.
 
 ## Limitations
 

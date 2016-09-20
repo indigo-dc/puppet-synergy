@@ -39,6 +39,8 @@ class synergy (
   $amqp_user='openstack',
   $amqp_password,
   $amqp_virtual_host='/',
+  $install_centos_cloud=true,
+  $install_indigo_repo=true,
 ){
   # Check which OS we are running on
   $os_name = $::operatingsystem
@@ -58,49 +60,54 @@ class synergy (
     ensure   => 'present',
   }
 
-  # Install Synergy package and dependencies
+  # CentOS 7 packages
   if $os_name == 'CentOS' and $os_version == '7' {
-    yumrepo { 'indigo':
-      descr    => 'INDIGO-DataCloud repository for Synergy',
-      enabled  => 1,
-      baseurl  => 'http://repo.indigo-datacloud.eu/repository/indigo/1/centos7/x86_64/base/',
-      gpgcheck => 1,
-      gpgkey   => 'http://repo.indigo-datacloud.eu/repository/RPM-GPG-KEY-indigodc',
+    # Install or not the CentOS OpenStack repository
+    if $install_centos_cloud {
+      package { 'centos-release-openstack-liberty':
+        ensure => latest,
+      }
+
+      $pkg_openstack_liberty = Package['centos-release-openstack-liberty']
+    }
+    else {
+      $pkg_openstack_liberty = undef
     }
 
-    package { 'centos-release-openstack-liberty':
-      ensure => latest,
+    # Install or not the INDIGO-DC repository
+    if $install_indigo_repo {
+      yumrepo { 'indigo':
+        descr    => 'INDIGO-DataCloud repository for Synergy',
+        enabled  => 1,
+        baseurl  => 'http://repo.indigo-datacloud.eu/repository/indigo/1/centos7/x86_64/base/',
+        gpgcheck => 1,
+        gpgkey   => 'http://repo.indigo-datacloud.eu/repository/RPM-GPG-KEY-indigodc',
+      }
+
+      $yumrepo_indigo = Yumrepo['indigo']
+    }
+    else {
+      $yumrepo_indigo = undef
     }
 
     package { 'python-dateutil':
       ensure => present,
     }
 
-    package { 'python-eventlet':
+    package { [
+      'python-eventlet',
+      'python2-oslo-config',
+      'python-oslo-log',
+      'python-oslo-messaging'] :
       ensure  => present,
-      require => Package['centos-release-openstack-liberty'],
-    }
-
-    package { 'python2-oslo-config':
-      ensure  => present,
-      require => Package['centos-release-openstack-liberty'],
-    }
-
-    package { 'python-oslo-log':
-      ensure  => present,
-      require => Package['centos-release-openstack-liberty'],
-    }
-
-    package { 'python-oslo-messaging':
-      ensure  => present,
-      require => Package['centos-release-openstack-liberty'],
+      require => $pkg_openstack_liberty,
     }
 
     package { 'python-synergy-service':
       ensure   => present,
       require  => [
-        Package['centos-release-openstack-liberty'],
-        Yumrepo['indigo'],
+        $pkg_openstack_liberty,
+        $yumrepo_indigo,
       ],
     }
 
@@ -108,40 +115,38 @@ class synergy (
       ensure  => present,
       require => [
         Package['python-synergy-service'],
-        Yumrepo['indigo'],
+        $yumrepo_indigo,
       ],
     }
   }
 
+  # Ubuntu 14.04 packages
   elsif $os_name == 'Ubuntu' and $os_version == '14.04' {
-    apt::key { 'indigo':
-      id     => '02F49DBEE9D159F18FD3D35F4CC3AB0A98098DFB',
-      source => 'http://repo.indigo-datacloud.eu/repository/RPM-GPG-KEY-indigodc',
+    # Install or not the INDIGO-DC repository
+    if $install_indigo_repo {
+      apt::key { 'indigo':
+        id     => '02F49DBEE9D159F18FD3D35F4CC3AB0A98098DFB',
+        source => 'http://repo.indigo-datacloud.eu/repository/RPM-GPG-KEY-indigodc',
+      }
+
+      apt::source { 'indigo':
+        location => 'http://repo.indigo-datacloud.eu/repository/indigo/1/ubuntu/',
+        repos    => "main third-party",
+        require  => Apt::Key['indigo'],
+      }
+
+      $apt_source_indigo = Apt::Source['indigo']
+    }
+    else {
+      $apt_source_indigo = undef
     }
 
-    apt::source { 'indigo':
-      location => 'http://repo.indigo-datacloud.eu/repository/indigo/1/ubuntu/',
-      repos    => "main third-party",
-      require  => Apt::Key['indigo'],
-    }
-
-    package { 'python-eventlet':
-      ensure => present,
-    }
-
-    package { 'python-pbr':
-      ensure => present,
-    }
-
-    package { 'python-oslo.messaging':
-      ensure => present,
-    }
-
-    package { 'python-dateutil':
-      ensure => present,
-    }
-
-    package { 'python-oslo.config':
+    package { [
+      'python-eventlet',
+      'python-pbr',
+      'python-oslo.messaging',
+      'python-dateutil',
+      'python-oslo.config'] :
       ensure => present,
     }
 
@@ -155,7 +160,7 @@ class synergy (
         Package['python-oslo.messaging'],
         Package['python-dateutil'],
         Package['python-oslo.config'],
-        Apt::Source['indigo'],
+        $apt_source_indigo,
       ],
     }
 
@@ -164,7 +169,7 @@ class synergy (
       ensure  => present,
       require => [
         Package['python-synergy-service'],
-        Apt::Source['indigo'],
+        $apt_source_indigo,
       ],
     }
   }
