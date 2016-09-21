@@ -90,19 +90,6 @@ class synergy (
       $yumrepo_indigo = undef
     }
 
-    package { 'python-dateutil':
-      ensure => present,
-    }
-
-    package { [
-      'python-eventlet',
-      'python2-oslo-config',
-      'python-oslo-log',
-      'python-oslo-messaging'] :
-      ensure  => present,
-      require => $pkg_openstack_liberty,
-    }
-
     package { 'python-synergy-service':
       ensure   => present,
       require  => [
@@ -141,27 +128,11 @@ class synergy (
       $apt_source_indigo = undef
     }
 
-    package { [
-      'python-eventlet',
-      'python-pbr',
-      'python-oslo.messaging',
-      'python-dateutil',
-      'python-oslo.config'] :
-      ensure => present,
-    }
-
     package { 'python-synergy-service':
       provider => 'apt',
       name     => 'python-synergy-service',
       ensure   => present,
-      require  => [
-        Package['python-eventlet'],
-        Package['python-pbr'],
-        Package['python-oslo.messaging'],
-        Package['python-dateutil'],
-        Package['python-oslo.config'],
-        $apt_source_indigo,
-      ],
+      require  => $apt_source_indigo,
     }
 
     package { 'python-synergy-scheduler-manager':
