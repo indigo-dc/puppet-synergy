@@ -4,7 +4,6 @@
 #
 # === TODO
 # - release v1.0.0
-# - check if we must setup other things.
 #
 # [*project_shares*]
 # Define relative shares between each project.
@@ -33,12 +32,14 @@ class synergy (
   $keystone_admin_password,
   $nova_url,
   $nova_db_url,
+  $nova_conf_path='/etc/nova/nova.conf',
   $amqp_backend='rabbit',
   $amqp_host,
   $amqp_port=5672,
   $amqp_user='openstack',
   $amqp_password,
   $amqp_virtual_host='/',
+  $metadata_secret,
   $install_centos_cloud=true,
   $install_indigo_repo=true,
 ){
@@ -115,7 +116,6 @@ class synergy (
         id     => '02F49DBEE9D159F18FD3D35F4CC3AB0A98098DFB',
         source => 'http://repo.indigo-datacloud.eu/repository/RPM-GPG-KEY-indigodc',
       }
-
       apt::source { 'indigo':
         location => 'http://repo.indigo-datacloud.eu/repository/indigo/1/ubuntu/',
         repos    => "main third-party",

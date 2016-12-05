@@ -91,17 +91,21 @@ password=<%= @keystone_admin_password %>
 project_name=admin
 # Set the http connection timeout
 timeout=60
-
+# set the user domain name
+user_domain_name=default
+# set the project domain name
+project_domain_name=default
 
 [NovaManager]
 autostart=True
 rate=5
+metadata_proxy_shared_secret=<%= @metadata_secret %>
 
 # The nova configuration file: if specified the following attributes are used:
 # my_ip, conductor_topic, compute_topic, scheduler_topic, connection, rpc_backend
 # in case of RABBIT backend: rabbit_host, rabbit_port, rabbit_virtual_host, rabbit_userid, rabbit_password
 # in case of QPID backend: qpid_hostname, qpid_port, qpid_username, qpid_password
-nova_conf=/etc/nova/nova.conf
+nova_conf=<%= @nova_conf_path %>
 
 host=<%= @nova_url %>
 #set the http connection timeout (default=60)
