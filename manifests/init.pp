@@ -40,8 +40,7 @@ class synergy (
   $amqp_password,
   $amqp_virtual_host='/',
   $metadata_secret,
-  $install_centos_cloud=true,
-  $install_indigo_repo=true,
+  $enable_external_repository=true,
 ){
   # Check which OS we are running on
   $os_name = $::operatingsystem
@@ -64,7 +63,7 @@ class synergy (
   # CentOS 7 packages
   if $os_name == 'CentOS' and $os_version == '7' {
     # Install or not the CentOS OpenStack repository
-    if $install_centos_cloud {
+    if $enable_external_repository {
       package { 'centos-release-openstack-liberty':
         ensure => latest,
       }
@@ -76,7 +75,7 @@ class synergy (
     }
 
     # Install or not the INDIGO-DC repository
-    if $install_indigo_repo {
+    if $enable_external_repository {
       yumrepo { 'indigo':
         descr    => 'INDIGO-DataCloud repository for Synergy',
         enabled  => 1,
@@ -111,7 +110,7 @@ class synergy (
   # Ubuntu 14.04 packages
   elsif $os_name == 'Ubuntu' and $os_version == '14.04' {
     # Install or not the INDIGO-DC repository
-    if $install_indigo_repo {
+    if $enable_external_repository {
       apt::key { 'indigo':
         id     => '02F49DBEE9D159F18FD3D35F4CC3AB0A98098DFB',
         source => 'http://repo.indigo-datacloud.eu/repository/RPM-GPG-KEY-indigodc',
