@@ -54,7 +54,21 @@ class synergy (
     $os_version = undef
   }
 
-  # Install Synergy dependency that is not available as a system package
+  # Set package requirements w.r.t. "enable_external_repository"
+  $centos_synergy_service_require   = []
+  $centos_synergy_scheduler_require = [Package['python-synergy-service']]
+  $ubuntu_synergy_service_require   = []
+  $ubuntu_synergy_scheduler_require = [Package['python-synergy-service']]
+
+  if $enable_external_repository {
+    $centos_synergy_service_require   += [Package['centos-release-openstack-liberty']]
+    $centos_synergy_service_require   += [Yumrepo['indigo']]
+    $centos_synergy_scheduler_require += [Yumrepo['indigo']]
+    $ubuntu_synergy_service_require   += [Apt::Source['indigo']]
+    $ubuntu_synergy_scheduler_require += [Apt::Source['indigo']]
+  }
+
+  # Install/check Synergy dependency that is not available as a system package
   package { 'tabulate':
     provider => 'pip',
     ensure   => 'present',
@@ -67,11 +81,6 @@ class synergy (
       package { 'centos-release-openstack-liberty':
         ensure => latest,
       }
-
-      $pkg_openstack_liberty = Package['centos-release-openstack-liberty']
-    }
-    else {
-      $pkg_openstack_liberty = undef
     }
 
     # Install or not the INDIGO-DC repository
@@ -83,27 +92,16 @@ class synergy (
         gpgcheck => 1,
         gpgkey   => 'http://repo.indigo-datacloud.eu/repository/RPM-GPG-KEY-indigodc',
       }
-
-      $yumrepo_indigo = Yumrepo['indigo']
-    }
-    else {
-      $yumrepo_indigo = undef
     }
 
     package { 'python-synergy-service':
       ensure   => present,
-      require  => [
-        $pkg_openstack_liberty,
-        $yumrepo_indigo,
-      ],
+      require  => $centos_synergy_service_require,
     }
 
     package { 'python-synergy-scheduler-manager':
       ensure  => present,
-      require => [
-        Package['python-synergy-service'],
-        $yumrepo_indigo,
-      ],
+      require => $centos_synergy_scheduler_require,
     }
   }
 
@@ -120,27 +118,19 @@ class synergy (
         repos    => "main third-party",
         require  => Apt::Key['indigo'],
       }
-
-      $apt_source_indigo = Apt::Source['indigo']
-    }
-    else {
-      $apt_source_indigo = undef
     }
 
     package { 'python-synergy-service':
       provider => 'apt',
       name     => 'python-synergy-service',
       ensure   => present,
-      require  => $apt_source_indigo,
+      require  => $ubuntu_synergy_service_require,
     }
 
     package { 'python-synergy-scheduler-manager':
       name    => 'python-synergy-scheduler-manager',
       ensure  => present,
-      require => [
-        Package['python-synergy-service'],
-        $apt_source_indigo,
-      ],
+      require => $ubuntu_synergy_scheduler_require,
     }
   }
   else {
