@@ -105,7 +105,9 @@ metadata_proxy_shared_secret=<%= @metadata_secret %>
 # my_ip, conductor_topic, compute_topic, scheduler_topic, connection, rpc_backend
 # in case of RABBIT backend: rabbit_host, rabbit_port, rabbit_virtual_host, rabbit_userid, rabbit_password
 # in case of QPID backend: qpid_hostname, qpid_port, qpid_username, qpid_password
+<% if @nova_conf_path %>
 nova_conf=<%= @nova_conf_path %>
+<% end %>
 
 host=<%= @nova_url %>
 #set the http connection timeout (default=60)

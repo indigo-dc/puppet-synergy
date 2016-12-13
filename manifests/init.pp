@@ -32,7 +32,7 @@ class synergy (
   $keystone_admin_password,
   $nova_url,
   $nova_db_url,
-  $nova_conf_path='/etc/nova/nova.conf',
+  $nova_conf_path=undef,
   $amqp_backend='rabbit',
   $amqp_host,
   $amqp_port=5672,
