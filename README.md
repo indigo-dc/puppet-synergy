@@ -89,7 +89,6 @@ class { 'synergy':
 - `keystone_admin_password` (*required*): Keystone admin password.
 - `nova_url` (*required*): Nova URL
 - `nova_db_url` (*required*): Nova database URL, in SQLAlchemy format.
-- `nova_conf_path` (default: undef): path to the configuration file used by Nova.
 - `amqp_backend` (default: `rabbit`): AMQP backend.
 - `amqp_host` (*required*): AMQP host.
 - `amqp_port` (default: `5672`): AMQP port.

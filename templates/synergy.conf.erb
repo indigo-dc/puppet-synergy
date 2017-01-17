@@ -29,7 +29,6 @@ autostart=True
 rate=1
 
 # The list of projects accessing to the dynamic quota
-# projects=prj_a, prj_b
 <%
 projects = ""
 shares = ""
@@ -65,9 +64,10 @@ autostart=True
 rate=2
 
 # Period size
-period_length=7
+# period_length=7
+
 # Num of periods
-periods=3
+# periods=3
 
 # Default share value
 default_share=10
@@ -103,18 +103,10 @@ clock_skew = 60
 
 [NovaManager]
 autostart=True
+
+# rate (minutes)
 rate=5
-metadata_proxy_shared_secret=<%= @metadata_secret %>
 
-# The nova configuration file: if specified the following attributes are used:
-# my_ip, conductor_topic, compute_topic, scheduler_topic, connection, rpc_backend
-# in case of RABBIT backend: rabbit_host, rabbit_port, rabbit_virtual_host, rabbit_userid, rabbit_password
-# in case of QPID backend: qpid_hostname, qpid_port, qpid_username, qpid_password
-<% if @nova_conf_path %>
-nova_conf=<%= @nova_conf_path %>
-<% end %>
-
-host=<%= @nova_url %>
 #set the http connection timeout (default=60)
 timeout=60
 
@@ -125,6 +117,10 @@ amqp_port=<%= @amqp_port %>
 amqp_user=<%= @amqp_user %>
 amqp_password=<%= @amqp_password %>
 amqp_virt_host=<%= @amqp_virtual_host %>
+
+# set the Nova host
+host=<%= @nova_url %>
+
 # The conductor topic
 conductor_topic=conductor
 # The compute topic
@@ -135,17 +131,30 @@ scheduler_topic=scheduler
 # db_connection=DIALECT+DRIVER://USER:PASSWORD@HOST/DBNAME
 db_connection=<%= @nova_db_url %>
 
+# set the Nova CPU allocation ratio
+cpu_allocation_ratio = 16
+
+# set the Nova RAM allocation ratio
+ram_allocation_ratio = 1.5
+
+# set the Nova metadata_proxy_shared_secret
+metadata_proxy_shared_secret=<%= @metadata_secret %>
 
 [QueueManager]
 autostart=True
-rate=5
+
+# rate (minutes)
+# rate=60
+
 # The Synergy database connection
 # db_connection=DIALECT+DRIVER://USER:PASSWORD@HOST/DBNAME
 db_connection=<%= @synergy_db_url %>
+
 # The connection pool size
-db_pool_size=10
+# db_pool_size=10
+
 # The max overflow
-db_max_overflow=5
+# db_max_overflow=5
 
 
 [QuotaManager]
