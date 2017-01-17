@@ -55,6 +55,9 @@ default_TTL=2880
 # TTLs=prj_a=1440, prj_b=2880
 TTLs=
 
+# the integer value expresses the max depth used by the backfilling strategy:
+# this allows Synergy to not check the whole queue when looking for VMs to start
+backfill_depth=100
 
 [FairShareManager]
 autostart=True
@@ -95,6 +98,8 @@ timeout=60
 user_domain_name=default
 # set the project domain name
 project_domain_name=default
+# set the clock skew (default: 60 sec)
+clock_skew = 60
 
 [NovaManager]
 autostart=True
