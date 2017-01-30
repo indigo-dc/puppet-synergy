@@ -2,33 +2,51 @@
 
 
 [Logger]
-filename=<%= @synergy_log_file %>
-level=<%= @synergy_log_level %>
-formatter="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-maxBytes=1048576
-backupCount=100
+# set the logging file name
+filename = <%= @synergy_log_file %>
+
+# set the logging level. Valid values are: CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET.
+level = <%= @synergy_log_level %>
+
+# set the format of the logged messages
+formatter = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# set the max file size
+maxBytes = 1048576
+
+# set the logging rotation threshold
+backupCount = 100
 
 
 [WSGI]
-host=<%= @synergy_service_host %>
-port=<%= @synergy_service_port %>
-threads=2
-use_ssl=False
-#ssl_ca_file=
-#ssl_cert_file=
-#ssl_key_file=
-max_header_line=16384
-retry_until_window=30
-tcp_keepidle=600
-backlog=4096
+# set the Synergy hostname
+host = <%= @synergy_service_host %>
+
+# set the WSGI port (default: 8051)
+port = <%= @synergy_service_port %>
+
+# set the number of threads
+threads = 2
+
+# set the SSL
+use_ssl = False
+#ssl_ca_file =
+#ssl_cert_file =
+#ssl_key_file =
+max_header_line = 16384
+retry_until_window = 30
+tcp_keepidle = 600
+backlog = 4096
 
 
 [SchedulerManager]
-autostart=True
-# Rate (minutes)
-rate=1
+autostart = True
 
-# The list of projects accessing to the dynamic quota
+# set the manager rate (minutes)
+rate = 1
+
+# set the list of projects accessing to the shared quota
+# projects = prj_a, prj_b
 <%
 projects = ""
 shares = ""
@@ -43,120 +61,179 @@ shares.chomp!(', ')
 -%>
 projects=<%= projects %>
 
-# The integer value expresses the share
-# shares=prj_a=70, prj_b=30
+# set the projects share
+# shares = prj_a=70, prj_b=30
 shares=<%= shares %>
 
-# The integer value expresses the default max time to live (minutes) for VM/Container
-default_TTL=2880
+# set the default max time to live (minutes) for VM/Container
+default_TTL = 2880
 
-# The integer value expresses the max time to live (minutes) for VM/Container
-# TTLs=prj_a=1440, prj_b=2880
-TTLs=
+# set, for the specified projects, the max time to live (minutes) for VM/Container
+# TTLs = prj_a=1440, prj_b=2880
+TTLs =
 
-# the integer value expresses the max depth used by the backfilling strategy:
+# set the max depth used by the backfilling strategy (default: 100)
 # this allows Synergy to not check the whole queue when looking for VMs to start
-backfill_depth=100
+backfill_depth = 100
+
+# set the notification topic used by Nova for informing listeners about the state
+# changes of the VMs. In case some other service (e.g. Ceilometer) is listening
+# on the default Nova topic (i.e. "notifications"), please define a new topic
+specific for Synergy (e.g. notification_topics = notifications,synergy_notifications)
+notification_topic = notifications
 
 [FairShareManager]
-autostart=True
-# Rate (minutes)
-rate=2
+autostart = True
 
-# Period size
-# period_length=7
+# set the manager rate (minutes)
+rate = 2
 
-# Num of periods
-# periods=3
+# set the period size (default: 7 days)
+period_length = 7
 
-# Default share value
-default_share=10
+# set num of periods (default: 3)
+periods = 3
 
-# Weights
-decay_weight=0.5
-vcpus_weight=50
-age_weight=0
-memory_weight=50
+# set the default share value (default: 10)
+default_share = 10
+
+# set the dacay weight, float value [0,1] (default: 0.5)
+decay_weight = 0.5
+
+# set the vcpus weight (default: 100)
+vcpus_weight = 50
+
+# set the age weight (default: 10)
+age_weight = 10
+
+# set the memory weight (default: 70)
+memory_weight = 70
 
 
 [KeystoneManager]
-autostart=True
-rate=5
+autostart = True
 
-# The Keystone url (v3 only)
-# auth_url=http://localhost:5000/v3
-auth_url=<%= @keystone_url %>
-# The name of user with admin role
-username=<%= @keystone_admin_user %>
-# The password of user with admin role
-password=<%= @keystone_admin_password %>
-# The project to request authorization on
+# set the manager rate (minutes)
+rate = 5
+
+# set the Keystone url (v3 only)
+auth_url = <%= @keystone_url %>
+
+# set the name of user with admin role
+username = <%= @keystone_admin_user %>
+
+# set the password of user with admin role
+password = <%= @keystone_admin_password %>
+
+# set the project name to request authorization on
 project_name=admin
-# Set the http connection timeout
-timeout=60
-# set the user domain name
-user_domain_name=default
-# set the project domain name
-project_domain_name=default
-# set the clock skew (default: 60 sec)
+
+# set the project id to request authorization on
+#project_id =
+
+# set the http connection timeout (default: 60)
+timeout = 60
+
+# set the user domain name (default: default)
+user_domain_name = default
+
+# set the project domain name (default: default)
+project_domain_name = default
+
+# set the clock skew. This forces the request for token, a
+# delta time before the token expiration (default: 60 sec)
 clock_skew = 60
 
+# set the PEM encoded Certificate Authority to use when verifying HTTPs connections
+#ssl_ca_file =
+
+# set the SSL client certificate (PEM encoded)
+#ssl_cert_file =
+
+
 [NovaManager]
-autostart=True
+autostart = True
 
-# rate (minutes)
-rate=5
+# set the manager rate (minutes)
+rate = 5
 
-#set the http connection timeout (default=60)
-timeout=60
+#set the http connection timeout (default: 60)
+timeout = 60
 
-# The AMQP backend type (e.g. rabbit, qpid)
-amqp_backend=<%= @amqp_backend %>
-amqp_host=<%= @amqp_host %>
-amqp_port=<%= @amqp_port %>
-amqp_user=<%= @amqp_user %>
-amqp_password=<%= @amqp_password %>
-amqp_virt_host=<%= @amqp_virtual_host %>
+# set the AMQP backend type (e.g. rabbit, qpid)
+amqp_backend = <%= @amqp_backend %>
 
-# set the Nova host
-host=<%= @nova_url %>
+# set the AMQP HA cluster host:port pairs
+amqp_hosts = <%= @amqp_hosts %>
 
-# The conductor topic
-conductor_topic=conductor
-# The compute topic
-compute_topic=compute
-# The scheduler topic
-scheduler_topic=scheduler
-# The NOVA database connection
-# db_connection=DIALECT+DRIVER://USER:PASSWORD@HOST/DBNAME
-db_connection=<%= @nova_db_url %>
+# set the AMQP broker address where a single node is used (default: localhost)
+amqp_host = <%= @amqp_host %>
 
-# set the Nova CPU allocation ratio
+# set the AMQP broker port where a single node is used
+amqp_port = <%= @amqp_port %>
+
+# set the AMQP user
+amqp_user = <%= @amqp_user %>
+
+# set the AMQP user password
+amqp_password = <%= @amqp_password %>
+
+# set the AMQP virtual host (default: /)
+amqp_virt_host = <%= @amqp_virtual_host %>
+
+# set the Nova host (default: localhost)
+host = <%= @nova_url %>
+
+# set the Nova conductor topic (default: conductor)
+conductor_topic = conductor
+
+# set the Nova compute topic (default: compute)
+compute_topic = compute
+
+# set the Nova scheduler topic (default: scheduler)
+scheduler_topic = scheduler
+
+# set the Nova database connection
+db_connection = <%= @nova_db_url %>
+
+# set the Nova CPU allocation ratio (default: 16)
 cpu_allocation_ratio = 16
 
-# set the Nova RAM allocation ratio
+# set the Nova RAM allocation ratio (default: 1.5)
 ram_allocation_ratio = 1.5
 
 # set the Nova metadata_proxy_shared_secret
-metadata_proxy_shared_secret=<%= @metadata_secret %>
+metadata_proxy_shared_secret = <%= @metadata_secret %>
+
+# set the PEM encoded Certificate Authority to use when verifying HTTPs connections
+#ssl_ca_file =
+
+# set the SSL client certificate (PEM encoded)
+#ssl_cert_file =
+
 
 [QueueManager]
-autostart=True
+autostart = True
 
-# rate (minutes)
-# rate=60
+# set the manager rate (minutes)
+rate = 60
 
-# The Synergy database connection
-# db_connection=DIALECT+DRIVER://USER:PASSWORD@HOST/DBNAME
-db_connection=<%= @synergy_db_url %>
+# set the Synergy database connection:
+db_connection = <%= @synergy_db_url %>
 
-# The connection pool size
-# db_pool_size=10
+# set the connection pool size (default: 10)
+db_pool_size = 10
 
-# The max overflow
-# db_max_overflow=5
+# set the number of seconds after which a connection is automatically
+# recycled (default: 30)
+db_pool_recycle = 30
+
+# set the max overflow (default: 5)
+db_max_overflow = 5
 
 
 [QuotaManager]
-autostart=True
-rate=5
+autostart = True
+
+# set the manager rate (minutes)
+rate = 5

@@ -33,6 +33,7 @@ class synergy (
   $nova_url,
   $nova_db_url,
   $amqp_backend='rabbit',
+  $amqp_hosts='',
   $amqp_host,
   $amqp_port=5672,
   $amqp_user='openstack',
